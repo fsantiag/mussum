@@ -36,7 +36,7 @@ func main() {
 				bot.Send(msg)
 
 				//TODO generate a random challenge
-				msg = botapi.NewMessage(int64(user.ID), fmt.Sprintf("Quanto é 4 + 4? Você tem 60 segundos.", user.UserName))
+				msg = botapi.NewMessage(int64(user.ID), fmt.Sprintf("Quanto é 4 + 4? Você tem 60 segundos: %s", user.UserName))
 				bot.Send(msg)
 				//TODO add user to the active challenge list
 				//TODO start a goroutine to count the time and check if user passes the test
