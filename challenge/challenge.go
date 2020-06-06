@@ -1,4 +1,4 @@
-package main
+package challenge
 
 import (
 	"math/rand"
@@ -16,7 +16,7 @@ type SumChallenge struct {
 const max = 100
 
 // GenerateChallenge will create a random sum challenge
-func GenerateChallenge() SumChallenge {
+func Generate() SumChallenge {
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
 

@@ -1,4 +1,4 @@
-package main
+package challenge
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestChallengeIsGenerated(t *testing.T) {
-	challenge := generateChallenge()
+	challenge := Generate()
 
 	answer := challenge.ElementA + challenge.ElementB
 
@@ -15,8 +15,8 @@ func TestChallengeIsGenerated(t *testing.T) {
 }
 
 func TestRandomChallengesAreGenerated(t *testing.T) {
-	c1 := generateChallenge()
-	c2 := generateChallenge()
+	c1 := Generate()
+	c2 := Generate()
 
 	assert.NotEqual(t, c1, c2)
 }

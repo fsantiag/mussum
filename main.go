@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fsantiag/mussum/challenge"
 	botapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -14,7 +15,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	userActiveChallenges := make(map[int64]SumChallenge)
+	userActiveChallenges := make(map[int64]challenge.SumChallenge)
 
 	bot.Debug = true
 
@@ -42,12 +43,12 @@ func main() {
 					msg := botapi.NewMessage(userID, m)
 					bot.Send(msg)
 
-					challenge := GenerateChallenge()
-					challengeMsg := fmt.Sprintf("Quanto é %d %s %d? Você tem 60 segundos!", challenge.ElementA, challenge.Operation, challenge.ElementB)
+					c := challenge.Generate()
+					challengeMsg := fmt.Sprintf("Quanto é %d %s %d? Você tem 60 segundos!", c.ElementA, c.Operation, c.ElementB)
 					msg = botapi.NewMessage(userID, challengeMsg)
 					bot.Send(msg)
 
-					userActiveChallenges[userID] = challenge
+					userActiveChallenges[userID] = c
 					go timeCounter(userID, timeoutChannel)
 				}
 			}
