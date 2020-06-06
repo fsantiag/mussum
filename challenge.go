@@ -1,6 +1,9 @@
 package main
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 // Challenge represents a math challenge
 type Challenge struct {
@@ -10,8 +13,7 @@ type Challenge struct {
 	Operation string
 }
 
-const max = 99
-const min = 0
+const max = 100
 
 var ops = map[string]func(int, int) int{
 	"+": func(a int, b int) int {
@@ -20,9 +22,11 @@ var ops = map[string]func(int, int) int{
 }
 
 func generateChallenge() Challenge {
+	source := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(source)
 	sum := "+"
-	elementA := rand.Intn(max-min+1) + min
-	elementB := rand.Intn(max-min+1) + min
+	elementA := r.Intn(max)
+	elementB := r.Intn(max)
 	answer := ops[sum](elementA, elementB)
 
 	return Challenge{
