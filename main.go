@@ -47,8 +47,7 @@ func main() {
 					bot.Send(msg)
 
 					c := challenge.Generate()
-					challengeMsg := fmt.Sprintf("Quanto é %d %s %d? Você tem 60 segundos!", c.ElementA, c.Operation, c.ElementB)
-					msg = botapi.NewMessage(int64(user.ID), challengeMsg)
+					msg = botapi.NewMessage(int64(user.ID), fmt.Sprint(c))
 					bot.Send(msg)
 
 					activeChallenges[user.ID] = c

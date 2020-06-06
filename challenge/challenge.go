@@ -1,6 +1,7 @@
 package challenge
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -11,6 +12,10 @@ type SumChallenge struct {
 	ElementB  int
 	Answer    int
 	Operation string
+}
+
+func (c SumChallenge) String() string {
+	return fmt.Sprintf("Qual o valor de %v + %v?", c.ElementA, c.ElementB)
 }
 
 const max = 100
