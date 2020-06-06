@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -16,13 +17,12 @@ type Message struct {
 }
 
 func main() {
-	bot, err := botapi.NewBotAPI("")
+	bot, err := botapi.NewBotAPI(os.Getenv("APIKEY"))
+	// bot.Debug = true
 	if err != nil {
 		log.Fatalf("Unable to connect to Telegram Bot API: %v", err)
 	}
 	activeChallenges := make(map[int]challenge.SumChallenge)
-
-	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -53,10 +53,13 @@ func main() {
 
 					activeChallenges[user.ID] = c
 
-					go timer(Message{
-						userID: user.ID,
-						chatID: update.Message.Chat.ID,
-					}, timeoutChannel)
+					go func() {
+						time.Sleep(60 * time.Second)
+						timeoutChannel <- Message{
+							userID: user.ID,
+							chatID: update.Message.Chat.ID,
+						}
+					}()
 				}
 			}
 			if update.Message.Chat.IsPrivate() {
@@ -91,9 +94,4 @@ func main() {
 			}
 		}
 	}
-}
-
-func timer(message Message, channel chan<- Message) {
-	time.Sleep(60 * time.Second)
-	channel <- message
 }
