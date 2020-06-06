@@ -10,12 +10,17 @@ import (
 	botapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
+type Message struct {
+	userID int
+	chatID int64
+}
+
 func main() {
 	bot, err := botapi.NewBotAPI("")
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Unable to connect to Telegram Bot API: %v", err)
 	}
-	userActiveChallenges := make(map[int64]challenge.SumChallenge)
+	activeChallenges := make(map[int]challenge.SumChallenge)
 
 	bot.Debug = true
 
@@ -25,7 +30,7 @@ func main() {
 	u.Timeout = 60
 
 	updates, err := bot.GetUpdatesChan(u)
-	timeoutChannel := make(chan int64)
+	timeoutChannel := make(chan Message)
 
 	for {
 		select {
@@ -34,33 +39,34 @@ func main() {
 				continue
 			}
 
-			//TODO listen to the channel where challenges get completed
 			if update.Message.NewChatMembers != nil {
 				for _, user := range *update.Message.NewChatMembers {
-					userID := int64(user.ID)
 					//TODO extract the hardcoded messages
 					m := fmt.Sprintf("Bem vinda ao DevOps Recife %s!\nEnviei um desafio para você no chat privado e espero que você me retorne em até 60 segundos ou terei que te convidar para sair do grupo! Nada pessoal, só não aceitamos spammers! :P", user.UserName)
-					msg := botapi.NewMessage(userID, m)
+					msg := botapi.NewMessage(int64(user.ID), m)
 					bot.Send(msg)
 
 					c := challenge.Generate()
 					challengeMsg := fmt.Sprintf("Quanto é %d %s %d? Você tem 60 segundos!", c.ElementA, c.Operation, c.ElementB)
-					msg = botapi.NewMessage(userID, challengeMsg)
+					msg = botapi.NewMessage(int64(user.ID), challengeMsg)
 					bot.Send(msg)
 
-					userActiveChallenges[userID] = c
-					go timeCounter(userID, timeoutChannel)
+					activeChallenges[user.ID] = c
+
+					go timer(Message{
+						userID: user.ID,
+						chatID: update.Message.Chat.ID,
+					}, timeoutChannel)
 				}
 			}
 			if update.Message.Chat.IsPrivate() {
-				userID := update.Message.Chat.ID
-				if challenge, ok := userActiveChallenges[userID]; ok {
+				if challenge, ok := activeChallenges[update.Message.From.ID]; ok {
 					var msg botapi.MessageConfig
 					if update.Message.Text == strconv.Itoa(challenge.Answer) {
-						msg = botapi.NewMessage(userID, "Resposta correta! Obrigado!")
-						delete(userActiveChallenges, userID)
+						msg = botapi.NewMessage(update.Message.Chat.ID, "Resposta correta! Obrigado!")
+						delete(activeChallenges, update.Message.From.ID)
 					} else {
-						msg = botapi.NewMessage(userID, "Não foi dessa vez, quer tentar de novo?")
+						msg = botapi.NewMessage(update.Message.Chat.ID, "Não foi dessa vez, quer tentar de novo?")
 					}
 					msg.ReplyToMessageID = update.Message.MessageID
 					bot.Send(msg)
@@ -68,16 +74,26 @@ func main() {
 			}
 
 			//TODO wipe all messages if a user post in the group and has an active challenge.
-		case userID := <-timeoutChannel:
-			if _, ok := userActiveChallenges[userID]; ok {
-				//TODO kick the user from the group
-				delete(userActiveChallenges, userID)
+		case message := <-timeoutChannel:
+			if _, ok := activeChallenges[message.userID]; ok {
+				kickCfg := botapi.KickChatMemberConfig{
+					ChatMemberConfig: botapi.ChatMemberConfig{
+						UserID: message.userID,
+						ChatID: message.chatID,
+					},
+					UntilDate: 400,
+				}
+				_, err := bot.KickChatMember(kickCfg)
+				if err != nil {
+					log.Printf("Unable to kick user from group: %v", err)
+				}
+				delete(activeChallenges, message.userID)
 			}
 		}
 	}
 }
 
-func timeCounter(userID int64, channel chan<- int64) {
+func timer(message Message, channel chan<- Message) {
 	time.Sleep(60 * time.Second)
-	channel <- userID
+	channel <- message
 }
