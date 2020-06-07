@@ -16,6 +16,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSendChallengeToUser(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockBotApi := mocks.NewMockBotIface(mockCtrl)
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	defer func() {
+		log.SetOutput(os.Stdout)
+	}()
+
+	c := challenge.Generate()
+	u := botapi.User{
+		ID: 10,
+	}
+	l := language.Pt{}
+
+	msg1 := botapi.NewMessage(10, l.Welcome())
+	msg2 := botapi.NewMessage(10, fmt.Sprintf(l.Challenge(), c.A, c.Operation, c.B))
+
+	mockBotApi.EXPECT().Send(msg1).Return(botapi.Message{}, nil).Times(1)
+	mockBotApi.EXPECT().Send(msg2).Return(botapi.Message{}, nil).Times(1)
+	sendChallengeToUser(u, l, mockBotApi, c)
+}
+
 func TestUserPassesTheChallenge(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
