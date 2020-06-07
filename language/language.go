@@ -7,6 +7,7 @@ type Language interface {
 	Wrong() string
 	Correct() string
 	Challenge() string
+	Id() string
 }
 
 func GetDefault() Language {

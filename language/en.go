@@ -14,3 +14,6 @@ func (e En) Correct() string {
 func (e En) Challenge() string {
 	return "What is thre result of %v %v %v?"
 }
+func (e En) Id() string {
+	return "en"
+}

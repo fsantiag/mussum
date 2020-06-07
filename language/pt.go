@@ -14,3 +14,6 @@ func (p Pt) Correct() string {
 func (p Pt) Challenge() string {
 	return "Qual o valor de %v %v %v?"
 }
+func (p Pt) Id() string {
+	return "pt"
+}
