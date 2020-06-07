@@ -28,18 +28,24 @@ func main() {
 	m := make(map[int]challenge.SumChallenge)
 
 	log.Printf("Bot started and authorized on account [%v]", b.UserName())
-	startBot(b, l, m)
-}
-
-func startBot(bot adapter.BotIface, lang language.Language, activeChallenges map[int]challenge.SumChallenge) {
 	u := botapi.NewUpdate(0)
 	u.Timeout = 60
-
-	updates, err := bot.GetUpdatesChan(u)
+	updates, err := b.GetUpdatesChan(u)
 	if err != nil {
 		log.Fatal("Failed to retrieve update channel")
 	}
-	timeoutChannel := make(chan message)
+	quit := make(chan bool)
+	timeout := make(chan message)
+	startBot(b, l, m, updates, quit, timeout)
+}
+
+func startBot(
+	bot adapter.BotIface,
+	lang language.Language,
+	activeChallenges map[int]challenge.SumChallenge,
+	updates botapi.UpdatesChannel,
+	quit chan bool,
+	timeout chan message) {
 
 	for {
 		select {
@@ -62,7 +68,7 @@ func startBot(bot adapter.BotIface, lang language.Language, activeChallenges map
 
 					go func() {
 						time.Sleep(60 * time.Second)
-						timeoutChannel <- message{
+						timeout <- message{
 							userID: user.ID,
 							chatID: update.Message.Chat.ID,
 						}
@@ -77,12 +83,15 @@ func startBot(bot adapter.BotIface, lang language.Language, activeChallenges map
 			}
 
 			//TODO wipe all messages if a user post in the group and has an active challenge.
-		case m := <-timeoutChannel:
+		case m := <-timeout:
 			if _, ok := activeChallenges[m.userID]; ok {
 				log.Printf("[%v] User failed to solve challenge", m.userID)
 				kickUser(m, bot)
 				delete(activeChallenges, m.userID)
 			}
+		case <-quit:
+			log.Print("Exiting...")
+			return
 		}
 	}
 }
