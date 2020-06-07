@@ -17,7 +17,10 @@ type BotAdapter struct {
 
 func NewBotAPI(token string) (BotIface, error) {
 	b, err := botapi.NewBotAPI(token)
-	return BotAdapter{b, b.Self}, err
+	if err != nil {
+		return nil, err
+	}
+	return BotAdapter{b, b.Self}, nil
 }
 
 func (b BotAdapter) KickChatMember(config botapi.KickChatMemberConfig) (botapi.APIResponse, error) {
