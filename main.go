@@ -50,7 +50,7 @@ func main() {
 					bot.Send(msg)
 
 					c := challenge.Generate()
-					msg = botapi.NewMessage(int64(user.ID), fmt.Sprintf(lang.Challenge(), c.ElementA, c.Operation, c.ElementB))
+					msg = botapi.NewMessage(int64(user.ID), fmt.Sprintf(lang.Challenge(), c.A, c.Operation, c.B))
 					bot.Send(msg)
 
 					activeChallenges[user.ID] = c
@@ -69,7 +69,7 @@ func main() {
 			if update.Message.Chat.IsPrivate() {
 				if challenge, ok := activeChallenges[update.Message.From.ID]; ok {
 					var msg botapi.MessageConfig
-					if update.Message.Text == strconv.Itoa(challenge.Answer) {
+					if update.Message.Text == strconv.Itoa(challenge.Result) {
 						msg = botapi.NewMessage(update.Message.Chat.ID, lang.Correct())
 						delete(activeChallenges, update.Message.From.ID)
 						log.Printf("[%v] User successfully solved the challange", update.Message.From.ID)

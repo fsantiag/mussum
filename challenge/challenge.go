@@ -7,9 +7,9 @@ import (
 
 // SumChallenge represents a math sum challenge
 type SumChallenge struct {
-	ElementA  int
-	ElementB  int
-	Answer    int
+	A         int
+	B         int
+	Result    int
 	Operation string
 }
 
@@ -20,14 +20,14 @@ func Generate() SumChallenge {
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
 
-	elementA := r.Intn(max)
-	elementB := r.Intn(max)
-	answer := elementA + elementB
+	A := r.Intn(max)
+	B := r.Intn(max)
+	result := A + B
 
 	return SumChallenge{
-		elementA,
-		elementB,
-		answer,
+		A,
+		B,
+		result,
 		"+",
 	}
 }
