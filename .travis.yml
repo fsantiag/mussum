@@ -10,7 +10,7 @@ jobs:
   - stage: Build & Test & Publish
     script: make build && scripts/publish.sh
   - stage: Deploy
-    script: scp docker-compose.yml fsantiago@fsantiago.info:/home/fsantiago/mussum/ && ssh -o SendEnv=TELEGRAM_TOKEN fsantiago@fsantiago.info 'docker-compose up -d'
+    script: scp docker-compose.yml fsantiago@fsantiago.info:/home/fsantiago/mussum/ && ssh -o SendEnv=TELEGRAM_TOKEN fsantiago@fsantiago.info 'cd mussum && docker-compose up -d'
 env:
   global:
   - secure: E2brz1WW96x7/HKS6TqFxfav5/vpOsnd/z9GG5lVeYgNJKGZoac9yaoAuCQkeXr7h6QwpFHr9z/bXdbUvlnAFYlKj170er7NLK9z1by2MKrT1Eck2OMf9yosoevdJLjZJIt4jv12VsN6Jv0pSSG5HFs4EvLITujGaa+DjCV8Y7t2TYgJJ/kHyu8jqwAo2i146waDKGd7kvDqAU2ULGSdz14oQzxt5I9r/K3ealHKPna/dmQMuEomAz+rzsfBcqS0mtxBLyjLGYG0OgrlFU6/T54ZGX7RkVCTig8S4f8Xf63+u5H0aXlDiBM5ui6KYGdzOjWSNfbwQKhs7Y7PV+Gu4vkcyUokd3D0v2epf4+cNuKtu9rmLu0HKv4yu1Z/v6/xfrQEZD6qiXiiitKkkRng6UGNCm3q8ngHwzhZZ5nrcjXarXSqiT9yqSnmJk4Qg+TTCSQvuYquknJP4Gjw43ZnTQBzRIN+/O4vhYGJUQn21OW678G8+ui4NkUFk7twgrsFdsP6smXCYv8QFgPyBSgufNiOMfGqVMIhSxYCuMCaiO7iJX4YYV9CK03tS7mWQM3ZyIDCfgDPwQXClhNii48OWTqL2Qe5dKfxZqjvU9UBR2J+134jfhvHRHJhX402KNMbuz5d6r4XtTiAnnUcnzM4EdyEkK+Dv5nm5AEIb6nagwE=
