@@ -13,27 +13,33 @@ import (
 	botapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-type Message struct {
+type message struct {
 	userID int
 	chatID int64
 }
 
 func main() {
-	bot, err := adapter.NewBotAPI(os.Getenv("APIKEY"))
+	b, err := adapter.NewBotAPI(os.Getenv("APIKEY"))
 	if err != nil {
 		log.Fatalf("Unable to connect to Telegram Bot API: %v", err)
 	}
-	// bot.Debug = true
-	lang := language.GetDefault()
-	activeChallenges := make(map[int]challenge.SumChallenge)
+	// b.Debug = true
+	l := language.GetDefault()
+	m := make(map[int]challenge.SumChallenge)
 
-	log.Printf("Bot started and authorized on account [%v]", bot.UserName())
+	log.Printf("Bot started and authorized on account [%v]", b.UserName())
+	startBot(b, l, m)
+}
 
+func startBot(bot adapter.BotIface, lang language.Language, activeChallenges map[int]challenge.SumChallenge) {
 	u := botapi.NewUpdate(0)
 	u.Timeout = 60
 
 	updates, err := bot.GetUpdatesChan(u)
-	timeoutChannel := make(chan Message)
+	if err != nil {
+		log.Fatal("Failed to retrieve update channel")
+	}
+	timeoutChannel := make(chan message)
 
 	for {
 		select {
@@ -56,7 +62,7 @@ func main() {
 
 					go func() {
 						time.Sleep(60 * time.Second)
-						timeoutChannel <- Message{
+						timeoutChannel <- message{
 							userID: user.ID,
 							chatID: update.Message.Chat.ID,
 						}
@@ -116,7 +122,7 @@ func verifyUserAnswer(
 	bot.Send(msg)
 }
 
-func kickUser(message Message, bot adapter.BotIface) {
+func kickUser(message message, bot adapter.BotIface) {
 
 	kickCfg := botapi.KickChatMemberConfig{
 		ChatMemberConfig: botapi.ChatMemberConfig{

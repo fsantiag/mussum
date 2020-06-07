@@ -19,7 +19,7 @@ import (
 func TestSendChallengeToUser(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockBotApi := mocks.NewMockBotIface(mockCtrl)
+	mockBotAPI := mocks.NewMockBotIface(mockCtrl)
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	defer func() {
@@ -35,15 +35,15 @@ func TestSendChallengeToUser(t *testing.T) {
 	msg1 := botapi.NewMessage(10, l.Welcome())
 	msg2 := botapi.NewMessage(10, fmt.Sprintf(l.Challenge(), c.A, c.Operation, c.B))
 
-	mockBotApi.EXPECT().Send(msg1).Return(botapi.Message{}, nil).Times(1)
-	mockBotApi.EXPECT().Send(msg2).Return(botapi.Message{}, nil).Times(1)
-	sendChallengeToUser(u, l, mockBotApi, c)
+	mockBotAPI.EXPECT().Send(msg1).Return(botapi.Message{}, nil).Times(1)
+	mockBotAPI.EXPECT().Send(msg2).Return(botapi.Message{}, nil).Times(1)
+	sendChallengeToUser(u, l, mockBotAPI, c)
 }
 
 func TestUserPassesTheChallenge(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockBotApi := mocks.NewMockBotIface(mockCtrl)
+	mockBotAPI := mocks.NewMockBotIface(mockCtrl)
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	defer func() {
@@ -71,8 +71,8 @@ func TestUserPassesTheChallenge(t *testing.T) {
 	msg := botapi.NewMessage(u.Message.Chat.ID, l.Correct())
 	msg.ReplyToMessageID = u.Message.MessageID
 
-	mockBotApi.EXPECT().Send(msg).Return(botapi.Message{}, nil).Times(1)
-	verifyUserAnswer(u, c, m, l, mockBotApi)
+	mockBotAPI.EXPECT().Send(msg).Return(botapi.Message{}, nil).Times(1)
+	verifyUserAnswer(u, c, m, l, mockBotAPI)
 	assert.Contains(t, buf.String(), "[1] User successfully solved the challange")
 	_, ok := m[u.Message.From.ID]
 	assert.False(t, ok)
@@ -81,7 +81,7 @@ func TestUserPassesTheChallenge(t *testing.T) {
 func TestUserFailsTheChallenge(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockBotApi := mocks.NewMockBotIface(mockCtrl)
+	mockBotAPI := mocks.NewMockBotIface(mockCtrl)
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	defer func() {
@@ -109,8 +109,8 @@ func TestUserFailsTheChallenge(t *testing.T) {
 	msg := botapi.NewMessage(u.Message.Chat.ID, l.Wrong())
 	msg.ReplyToMessageID = u.Message.MessageID
 
-	mockBotApi.EXPECT().Send(msg).Return(botapi.Message{}, nil).Times(1)
-	verifyUserAnswer(u, c, m, l, mockBotApi)
+	mockBotAPI.EXPECT().Send(msg).Return(botapi.Message{}, nil).Times(1)
+	verifyUserAnswer(u, c, m, l, mockBotAPI)
 	assert.Contains(t, buf.String(), "[1] Wrong answer for challenge")
 	_, ok := m[u.Message.From.ID]
 	assert.True(t, ok)
@@ -119,7 +119,7 @@ func TestUserFailsTheChallenge(t *testing.T) {
 func TestKickUser(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockBotApi := mocks.NewMockBotIface(mockCtrl)
+	mockBotAPI := mocks.NewMockBotIface(mockCtrl)
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	defer func() {
@@ -134,16 +134,16 @@ func TestKickUser(t *testing.T) {
 		UntilDate: 400, //forever
 	}
 
-	mockBotApi.EXPECT().KickChatMember(kickCfg).Return(botapi.APIResponse{}, nil).Times(1)
+	mockBotAPI.EXPECT().KickChatMember(kickCfg).Return(botapi.APIResponse{}, nil).Times(1)
 
-	kickUser(Message{userID: 555, chatID: 2}, mockBotApi)
+	kickUser(message{userID: 555, chatID: 2}, mockBotAPI)
 	assert.Contains(t, buf.String(), "[555] User kicked from the channel")
 }
 
 func TestKickUserFails(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	mockBotApi := mocks.NewMockBotIface(mockCtrl)
+	mockBotAPI := mocks.NewMockBotIface(mockCtrl)
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
 	defer func() {
@@ -158,8 +158,8 @@ func TestKickUserFails(t *testing.T) {
 		UntilDate: 400, //forever
 	}
 
-	mockBotApi.EXPECT().KickChatMember(kickCfg).Return(botapi.APIResponse{}, fmt.Errorf("Something went wrong!")).Times(1)
+	mockBotAPI.EXPECT().KickChatMember(kickCfg).Return(botapi.APIResponse{}, fmt.Errorf("something went wrong")).Times(1)
 
-	kickUser(Message{userID: 1, chatID: 2}, mockBotApi)
-	assert.Contains(t, buf.String(), "[1] Unable to kick user from group: Something went wrong!")
+	kickUser(message{userID: 1, chatID: 2}, mockBotAPI)
+	assert.Contains(t, buf.String(), "[1] Unable to kick user from group: something went wrong")
 }
