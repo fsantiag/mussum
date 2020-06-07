@@ -3,12 +3,6 @@ go:
 - 1.x
 services:
 - docker
-before_deploy:
-- openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv
-  -in travis_rsa.enc -out /tmp/travis_rsa -d
-- chmod 400 /tmp/travis_rsa
-- eval "$(ssh-agent -s)"
-- ssh-add /tmp/travis_rsa
 addons:
   ssh_known_hosts: fsantiago.info
 jobs:
@@ -16,7 +10,7 @@ jobs:
   - stage: Build & Test & Publish
     script: make build && scripts/publish.sh
   - stage: Deploy
-    script: ssh -t fsantiago@fsantiago.info 'docker run -d -e APIKEY=${TELEGRAM_TOKEN} fsantiag/mussum:1.0.0'
+    script: scripts/ssh-setup.sh && ssh -t fsantiago@fsantiago.info 'docker run -d -e APIKEY=${TELEGRAM_TOKEN} fsantiag/mussum:1.0.0'
 env:
   global:
   - secure: E2brz1WW96x7/HKS6TqFxfav5/vpOsnd/z9GG5lVeYgNJKGZoac9yaoAuCQkeXr7h6QwpFHr9z/bXdbUvlnAFYlKj170er7NLK9z1by2MKrT1Eck2OMf9yosoevdJLjZJIt4jv12VsN6Jv0pSSG5HFs4EvLITujGaa+DjCV8Y7t2TYgJJ/kHyu8jqwAo2i146waDKGd7kvDqAU2ULGSdz14oQzxt5I9r/K3ealHKPna/dmQMuEomAz+rzsfBcqS0mtxBLyjLGYG0OgrlFU6/T54ZGX7RkVCTig8S4f8Xf63+u5H0aXlDiBM5ui6KYGdzOjWSNfbwQKhs7Y7PV+Gu4vkcyUokd3D0v2epf4+cNuKtu9rmLu0HKv4yu1Z/v6/xfrQEZD6qiXiiitKkkRng6UGNCm3q8ngHwzhZZ5nrcjXarXSqiT9yqSnmJk4Qg+TTCSQvuYquknJP4Gjw43ZnTQBzRIN+/O4vhYGJUQn21OW678G8+ui4NkUFk7twgrsFdsP6smXCYv8QFgPyBSgufNiOMfGqVMIhSxYCuMCaiO7iJX4YYV9CK03tS7mWQM3ZyIDCfgDPwQXClhNii48OWTqL2Qe5dKfxZqjvU9UBR2J+134jfhvHRHJhX402KNMbuz5d6r4XtTiAnnUcnzM4EdyEkK+Dv5nm5AEIb6nagwE=
