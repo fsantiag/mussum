@@ -27,7 +27,7 @@ func main() {
 	}
 	activeChallenges := make(map[int]challenge.SumChallenge)
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	log.Printf("Bot started and authorized on account [%v]", bot.Self.UserName)
 
 	u := botapi.NewUpdate(0)
 	u.Timeout = 60
@@ -44,6 +44,8 @@ func main() {
 
 			if update.Message.NewChatMembers != nil {
 				for _, user := range *update.Message.NewChatMembers {
+					log.Printf("[%v] New user joined group", user.ID)
+
 					msg := botapi.NewMessage(int64(user.ID), lang.Welcome())
 					bot.Send(msg)
 
@@ -52,6 +54,8 @@ func main() {
 					bot.Send(msg)
 
 					activeChallenges[user.ID] = c
+
+					log.Printf("[%v] Challenge sent for user", user.ID)
 
 					go func() {
 						time.Sleep(60 * time.Second)
@@ -68,8 +72,10 @@ func main() {
 					if update.Message.Text == strconv.Itoa(challenge.Answer) {
 						msg = botapi.NewMessage(update.Message.Chat.ID, lang.Correct())
 						delete(activeChallenges, update.Message.From.ID)
+						log.Printf("[%v] User successfully solved the challange", update.Message.From.ID)
 					} else {
 						msg = botapi.NewMessage(update.Message.Chat.ID, lang.Wrong())
+						log.Printf("[%v] Wrong answer for challenge", update.Message.From.ID)
 					}
 					msg.ReplyToMessageID = update.Message.MessageID
 					bot.Send(msg)
@@ -79,6 +85,7 @@ func main() {
 			//TODO wipe all messages if a user post in the group and has an active challenge.
 		case message := <-timeoutChannel:
 			if _, ok := activeChallenges[message.userID]; ok {
+				log.Printf("[%v] User failed to solve challenge", message.userID)
 				kickCfg := botapi.KickChatMemberConfig{
 					ChatMemberConfig: botapi.ChatMemberConfig{
 						UserID: message.userID,
@@ -86,10 +93,14 @@ func main() {
 					},
 					UntilDate: 400,
 				}
+
 				_, err := bot.KickChatMember(kickCfg)
 				if err != nil {
-					log.Printf("Unable to kick user from group: %v", err)
+					log.Printf("[%v] Unable to kick user from group: %v", message.userID, err)
 				}
+
+				log.Printf("[%v] User kicked from the channel", message.userID)
+
 				delete(activeChallenges, message.userID)
 			}
 		}
