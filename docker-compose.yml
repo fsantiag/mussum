@@ -1,0 +1,8 @@
+version: '3'
+services:
+  mussum:
+    image: fsantiag/mussum:1.0.0
+    container_name: mussum
+    restart: always
+    environment:
+      - APIKEY=${APIKEY}
