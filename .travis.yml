@@ -21,4 +21,4 @@ before_install:
   -in mussum_rsa.enc -out /tmp/mussum_rsa -d
 - chmod 400 /tmp/mussum_rsa
 - eval "$(ssh-agent -s)"
-- ssh-add /tmp/travis_rsa
+- ssh-add /tmp/mussum_rsa
