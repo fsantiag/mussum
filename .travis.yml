@@ -10,7 +10,7 @@ jobs:
   - stage: Build & Test & Publish
     script: make build && scripts/publish.sh
   - stage: Deploy
-    script: scp docker-compose.yml fsantiago@fsantiago.info:/home/fsantiago/mussum/ && ssh -o SendEnv=TELEGRAM_TOKEN fsantiago@fsantiago.info "cd mussum && APIKEY=${TELEGRAM_TOKEN} docker-compose up --force-recreate -d"
+    script: scp docker-compose.yml fsantiago@fsantiago.info:/home/fsantiago/mussum/ && ssh -o SendEnv=TELEGRAM_TOKEN fsantiago@fsantiago.info "cd mussum && docker-compose pull && APIKEY=${TELEGRAM_TOKEN} docker-compose up --force-recreate -d"
 before_install:
 - openssl aes-256-cbc -K $encrypted_19679a0a12a5_key -iv $encrypted_19679a0a12a5_iv
   -in mussum_rsa.enc -out /tmp/mussum_rsa -d
