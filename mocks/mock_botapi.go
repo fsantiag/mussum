@@ -33,6 +33,21 @@ func (m *MockBotIface) EXPECT() *MockBotIfaceMockRecorder {
 	return m.recorder
 }
 
+// DeleteMessage mocks base method
+func (m *MockBotIface) DeleteMessage(arg0 tgbotapi.DeleteMessageConfig) (tgbotapi.APIResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteMessage", arg0)
+	ret0, _ := ret[0].(tgbotapi.APIResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteMessage indicates an expected call of DeleteMessage
+func (mr *MockBotIfaceMockRecorder) DeleteMessage(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteMessage", reflect.TypeOf((*MockBotIface)(nil).DeleteMessage), arg0)
+}
+
 // GetUpdatesChan mocks base method
 func (m *MockBotIface) GetUpdatesChan(arg0 tgbotapi.UpdateConfig) (tgbotapi.UpdatesChannel, error) {
 	m.ctrl.T.Helper()
