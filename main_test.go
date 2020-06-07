@@ -58,5 +58,5 @@ func TestKickUserFails(t *testing.T) {
 	mockBotApi.EXPECT().KickChatMember(kickCfg).Return(botapi.APIResponse{}, fmt.Errorf("Something went wrong!")).Times(1)
 
 	kickUser(Message{userID: 1, chatID: 2}, mockBotApi)
-	assert.Contains(t, buf.String(), "Unable to kick user from group: Something went wrong!")
+	assert.Contains(t, buf.String(), "[1] Unable to kick user from group: Something went wrong!")
 }
