@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fsantiag/mussum/challenge"
+	"github.com/fsantiag/mussum/language"
 	botapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -18,6 +19,8 @@ type Message struct {
 
 func main() {
 	bot, err := botapi.NewBotAPI(os.Getenv("APIKEY"))
+	lang := language.GetDefault()
+
 	// bot.Debug = true
 	if err != nil {
 		log.Fatalf("Unable to connect to Telegram Bot API: %v", err)
@@ -41,13 +44,11 @@ func main() {
 
 			if update.Message.NewChatMembers != nil {
 				for _, user := range *update.Message.NewChatMembers {
-					//TODO extract the hardcoded messages
-					m := fmt.Sprintf("Bem vinda ao DevOps Recife %s!\nEnviei um desafio para você no chat privado e espero que você me retorne em até 60 segundos ou terei que te convidar para sair do grupo! Nada pessoal, só não aceitamos spammers! :P", user.UserName)
-					msg := botapi.NewMessage(int64(user.ID), m)
+					msg := botapi.NewMessage(int64(user.ID), lang.Welcome())
 					bot.Send(msg)
 
 					c := challenge.Generate()
-					msg = botapi.NewMessage(int64(user.ID), fmt.Sprint(c))
+					msg = botapi.NewMessage(int64(user.ID), fmt.Sprintf(lang.Challenge(), c.ElementA, c.Operation, c.ElementB))
 					bot.Send(msg)
 
 					activeChallenges[user.ID] = c
@@ -65,10 +66,10 @@ func main() {
 				if challenge, ok := activeChallenges[update.Message.From.ID]; ok {
 					var msg botapi.MessageConfig
 					if update.Message.Text == strconv.Itoa(challenge.Answer) {
-						msg = botapi.NewMessage(update.Message.Chat.ID, "Resposta correta! Obrigado!")
+						msg = botapi.NewMessage(update.Message.Chat.ID, lang.Correct())
 						delete(activeChallenges, update.Message.From.ID)
 					} else {
-						msg = botapi.NewMessage(update.Message.Chat.ID, "Não foi dessa vez, quer tentar de novo?")
+						msg = botapi.NewMessage(update.Message.Chat.ID, lang.Wrong())
 					}
 					msg.ReplyToMessageID = update.Message.MessageID
 					bot.Send(msg)
