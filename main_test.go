@@ -116,36 +116,36 @@ func TestUserFailsTheChallenge(t *testing.T) {
 	assert.True(t, ok)
 }
 
-func TestIgnorePrivateMessagesWhenNoChallengeIsActiveForUser(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	mockBotAPI := mocks.NewMockBotIface(mockCtrl)
-	var buf bytes.Buffer
-	log.SetOutput(&buf)
-	defer func() {
-		log.SetOutput(os.Stdout)
-	}()
-	m := map[int]challenge.SumChallenge{}
-	l := language.Pt{}
-	u := botapi.Update{
-		Message: &botapi.Message{
-			Chat: &botapi.Chat{
-				Type: "private",
-			},
-			From: &botapi.User{
-				ID: 10,
-			},
-		},
-	}
-	updates := make(chan botapi.Update, 1)
-	updates <- u
-	quit := make(chan bool, 1)
-	timeout := make(chan message, 1)
-	quit <- true
+// func TestIgnorePrivateMessagesWhenNoChallengeIsActiveForUser(t *testing.T) {
+// 	mockCtrl := gomock.NewController(t)
+// 	defer mockCtrl.Finish()
+// 	mockBotAPI := mocks.NewMockBotIface(mockCtrl)
+// 	var buf bytes.Buffer
+// 	log.SetOutput(&buf)
+// 	defer func() {
+// 		log.SetOutput(os.Stdout)
+// 	}()
+// 	m := map[int]challenge.SumChallenge{}
+// 	l := language.Pt{}
+// 	u := botapi.Update{
+// 		Message: &botapi.Message{
+// 			Chat: &botapi.Chat{
+// 				Type: "private",
+// 			},
+// 			From: &botapi.User{
+// 				ID: 10,
+// 			},
+// 		},
+// 	}
+// 	updates := make(chan botapi.Update, 1)
+// 	updates <- u
+// 	quit := make(chan bool, 1)
+// 	timeout := make(chan message, 1)
+// 	quit <- true
 
-	mockBotAPI.EXPECT().Send(gomock.Any()).Return(botapi.Message{}, nil).Times(0)
-	startBot(mockBotAPI, l, m, updates, quit, timeout)
-}
+// 	mockBotAPI.EXPECT().Send(gomock.Any()).Return(botapi.Message{}, nil).Times(0)
+// 	startBot(mockBotAPI, l, m, updates, quit, timeout)
+// }
 
 func TestKickUser(t *testing.T) {
 	mockCtrl := gomock.NewController(t)

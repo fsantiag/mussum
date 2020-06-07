@@ -34,9 +34,8 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to retrieve update channel")
 	}
-	quit := make(chan bool)
 	timeout := make(chan message)
-	startBot(b, l, m, updates, quit, timeout)
+	startBot(b, l, m, updates, timeout)
 }
 
 func startBot(
@@ -44,7 +43,6 @@ func startBot(
 	lang language.Language,
 	activeChallenges map[int]challenge.SumChallenge,
 	updates botapi.UpdatesChannel,
-	quit chan bool,
 	timeout chan message) {
 
 	for {
@@ -89,9 +87,7 @@ func startBot(
 				kickUser(m, bot)
 				delete(activeChallenges, m.userID)
 			}
-		case <-quit:
-			log.Print("Exiting...")
-			return
+			log.Printf("[%v] Timeout reached and user succeeded in challenge", m.userID)
 		}
 	}
 }
