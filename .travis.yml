@@ -5,10 +5,8 @@ services:
 - docker
 jobs:
   include:
-  - stage: Build & Test
-    script: make build
-  - stage: Publish
-    script: scripts/publish.sh
+  - stage: Build & Test & Publish
+    script: make build && scripts/publish.sh
   - stage: Deploy
     script: echo "Deploy..."
 env:
