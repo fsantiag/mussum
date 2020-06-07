@@ -8,7 +8,7 @@ jobs:
   - stage: Build & Test
     script: make build
   - stage: Publish
-    script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && docker push fsantiag/mussum:1:0:0
+    script: scripts/publish.sh
   - stage: Deploy
     script: echo "Deploy..."
 env:
