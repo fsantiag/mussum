@@ -74,13 +74,15 @@ func startBot(
 
 				}
 			}
-			if update.Message.Chat.IsPrivate() {
-				if challenge, ok := activeChallenges[update.Message.From.ID]; ok {
-					verifyUserAnswer(update, challenge, activeChallenges, lang, bot)
-				}
+			challenge, hasActiveChallenge := activeChallenges[update.Message.From.ID]
+			if update.Message.Chat.IsPrivate() && hasActiveChallenge {
+				verifyUserAnswer(update, challenge, activeChallenges, lang, bot)
+			} else if hasActiveChallenge {
+				bot.DeleteMessage(botapi.DeleteMessageConfig{
+					ChatID:    update.Message.Chat.ID,
+					MessageID: update.Message.MessageID,
+				})
 			}
-
-			//TODO wipe all messages if a user post in the group and has an active challenge.
 		case m := <-timeout:
 			if _, ok := activeChallenges[m.userID]; ok {
 				log.Printf("[%v] User failed to solve challenge", m.userID)

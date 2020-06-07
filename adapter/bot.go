@@ -6,6 +6,7 @@ type BotIface interface {
 	KickChatMember(config botapi.KickChatMemberConfig) (botapi.APIResponse, error)
 	GetUpdatesChan(config botapi.UpdateConfig) (botapi.UpdatesChannel, error)
 	Send(c botapi.Chattable) (botapi.Message, error)
+	DeleteMessage(config botapi.DeleteMessageConfig) (botapi.APIResponse, error)
 	UserName() string
 }
 
@@ -27,6 +28,10 @@ func (b BotAdapter) GetUpdatesChan(config botapi.UpdateConfig) (botapi.UpdatesCh
 }
 func (b BotAdapter) Send(c botapi.Chattable) (botapi.Message, error) {
 	return b.Bot.Send(c)
+}
+
+func (b BotAdapter) DeleteMessage(config botapi.DeleteMessageConfig) (botapi.APIResponse, error) {
+	return b.Bot.DeleteMessage(config)
 }
 func (b BotAdapter) UserName() string {
 	return b.Bot.Self.UserName
