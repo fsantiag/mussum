@@ -9,9 +9,9 @@ import (
 func TestChallengeIsGenerated(t *testing.T) {
 	challenge := Generate()
 
-	answer := challenge.ElementA + challenge.ElementB
+	answer := challenge.A + challenge.B
 
-	assert.Equal(t, answer, challenge.Answer)
+	assert.Equal(t, answer, challenge.Result)
 }
 
 func TestRandomChallengesAreGenerated(t *testing.T) {

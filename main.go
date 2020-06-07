@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fsantiag/mussum/adapter"
 	"github.com/fsantiag/mussum/challenge"
 	"github.com/fsantiag/mussum/language"
 	botapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -18,16 +19,15 @@ type Message struct {
 }
 
 func main() {
-	bot, err := botapi.NewBotAPI(os.Getenv("APIKEY"))
-	lang := language.GetDefault()
-
-	// bot.Debug = true
+	bot, err := adapter.NewBotAPI(os.Getenv("APIKEY"))
 	if err != nil {
 		log.Fatalf("Unable to connect to Telegram Bot API: %v", err)
 	}
+	// bot.Debug = true
+	lang := language.GetDefault()
 	activeChallenges := make(map[int]challenge.SumChallenge)
 
-	log.Printf("Bot started and authorized on account [%v]", bot.Self.UserName)
+	log.Printf("Bot started and authorized on account [%v]", bot.UserName())
 
 	u := botapi.NewUpdate(0)
 	u.Timeout = 60
@@ -84,7 +84,7 @@ func main() {
 func sendChallengeToUser(
 	user botapi.User,
 	lang language.Language,
-	bot *botapi.BotAPI,
+	bot adapter.BotIface,
 	c challenge.SumChallenge) {
 
 	msg := botapi.NewMessage(int64(user.ID), lang.Welcome())
@@ -99,7 +99,7 @@ func verifyUserAnswer(
 	c challenge.SumChallenge,
 	activeChallenges map[int]challenge.SumChallenge,
 	lang language.Language,
-	bot *botapi.BotAPI) {
+	bot adapter.BotIface) {
 
 	var msg botapi.MessageConfig
 	if u.Message.Text == strconv.Itoa(c.Result) {
@@ -116,7 +116,7 @@ func verifyUserAnswer(
 	bot.Send(msg)
 }
 
-func kickUser(message Message, bot *botapi.BotAPI) {
+func kickUser(message Message, bot adapter.BotIface) {
 
 	kickCfg := botapi.KickChatMemberConfig{
 		ChatMemberConfig: botapi.ChatMemberConfig{
@@ -129,7 +129,7 @@ func kickUser(message Message, bot *botapi.BotAPI) {
 	_, err := bot.KickChatMember(kickCfg)
 	if err != nil {
 		log.Printf("[%v] Unable to kick user from group: %v", message.userID, err)
+	} else {
+		log.Printf("[%v] User kicked from the channel", message.userID)
 	}
-
-	log.Printf("[%v] User kicked from the channel", message.userID)
 }
