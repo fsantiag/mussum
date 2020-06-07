@@ -18,7 +18,7 @@ env:
   - secure: ecWiQ14mWh0I+H8cU9eYAMWov5GRU6UWSlld/yEAWIpjl8CYVpxRasCQ6pG+dLN+PcjothXJaaGqjxDTXRNYBtYTCxkkSKGwrDafZV5JW1ejtmaTU8njT6uL5pjPadlDh5WFKNmxTvg6Uz3fjqzNUWHst7upjrBkR0Papnc4MPADwONKFEYdexXNfrD8RZ3pQnc5XyRjXyBvhb0TL2wHk15wDiKqJUGbTw8tXwQYBN+yhpPqmJqh0usoYv1S8n1Bwc2BwTvLLorZ8G0vBC8fi5jf8hTNhcLT8FWhZHRnpxMkAop7bm0mJswL4WS8rfnUBOLtJhwxF1tAj0ESdtN2Ocz4cx1q2VNRshUztZ3YBeARrfqazh5/XEivxZwgJ6IscMKkXwbLfjamqns6DBVBt44bd5I9xbmI3+I/QIIF9NGXIfDUaTA13v/u0tFxozRZ3k89H7ecBAARTxsIDji6z1F1T697bq3UGnQPQCF46YVAVDKTidPkmLMAycvkMrkgqTyA8LhdhQm8PFWNbtdkbZDorok8c3vtCa2V8BetNbPtCtkN6bldUS3+Q+vlr/8cdQTNv5zmHKtTPQ41BDhdWA2b0l9oSlEBqmeSJ9/eKGNA5LnwmS20iMRm6ufY40oWMiJ+lc0wk52UFGIGBLtCHOZZy200GvTecthx/z+bP9o=
 before_install:
 - openssl aes-256-cbc -K $encrypted_19679a0a12a5_key -iv $encrypted_19679a0a12a5_iv
-  -in mussum_rsa.enc -out mussum_rsa -d
+  -in mussum_rsa.enc -out /tmp/mussum_rsa -d
 - chmod 400 /tmp/mussum_rsa
 - eval "$(ssh-agent -s)"
 - ssh-add /tmp/travis_rsa
