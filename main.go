@@ -55,7 +55,7 @@ func startBot(
 			if update.Message.NewChatMembers != nil {
 				for _, user := range *update.Message.NewChatMembers {
 					if user.UserName == bot.UserName() {
-						log.Printf("Bot joined group: %v", update.Message.Chat.FirstName)
+						log.Printf("Bot joined group: [%v]", update.Message.Chat.Title)
 						continue
 					}
 					log.Printf("[%v] New user joined group", user.ID)
