@@ -24,10 +24,10 @@ func main() {
 		log.Fatalf("Unable to connect to Telegram Bot API: %v", err)
 	}
 	// b.Debug = true
-	l := language.GetDefault()
-	m := make(map[int]challenge.SumChallenge)
-
 	log.Printf("Bot started and authorized on account [%v]", b.UserName())
+	m := make(map[int]challenge.SumChallenge)
+	l := language.GetDefault()
+	log.Printf("Active language: %v", l.Id())
 	u := botapi.NewUpdate(0)
 	u.Timeout = 60
 	updates, err := b.GetUpdatesChan(u)
@@ -54,6 +54,10 @@ func startBot(
 
 			if update.Message.NewChatMembers != nil {
 				for _, user := range *update.Message.NewChatMembers {
+					if user.UserName == bot.UserName() {
+						log.Printf("Bot joined group: %v", update.Message.Chat.FirstName)
+						continue
+					}
 					log.Printf("[%v] New user joined group", user.ID)
 
 					c := challenge.Generate()
