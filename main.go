@@ -92,6 +92,7 @@ func startBot(
 				log.Printf("[%v] User failed to solve challenge", m.userID)
 				kickUser(m, bot)
 				delete(activeChallenges, m.userID)
+				continue
 			}
 			log.Printf("[%v] Timeout reached and user succeeded in challenge", m.userID)
 		}
