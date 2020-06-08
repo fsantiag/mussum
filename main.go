@@ -19,11 +19,10 @@ type message struct {
 }
 
 func main() {
-	b, err := adapter.NewBotAPI(os.Getenv("APIKEY"))
+	b, err := adapter.NewBotAPI(os.Getenv("APIKEY"), false)
 	if err != nil {
 		log.Fatalf("Unable to connect to Telegram Bot API: %v", err)
 	}
-	// b.Debug = true
 	log.Printf("Bot started and authorized on account [%v]", b.UserName())
 	m := make(map[int]challenge.SumChallenge)
 	l := language.GetDefault()
@@ -62,7 +61,7 @@ func startBot(
 
 					c := challenge.Generate()
 
-					sendChallengeToUser(user, lang, bot, c)
+					sendChallengeToUser(message{userID: user.ID, chatID: update.Message.Chat.ID}, lang, bot, c)
 
 					activeChallenges[user.ID] = c
 
@@ -78,15 +77,16 @@ func startBot(
 
 				}
 			}
-			challenge, hasActiveChallenge := activeChallenges[update.Message.From.ID]
-			if update.Message.Chat.IsPrivate() && hasActiveChallenge {
-				verifyUserAnswer(update, challenge, activeChallenges, lang, bot)
-			} else if hasActiveChallenge {
-				bot.DeleteMessage(botapi.DeleteMessageConfig{
-					ChatID:    update.Message.Chat.ID,
-					MessageID: update.Message.MessageID,
-				})
+			if !update.Message.Chat.IsPrivate() && update.Message.Text != "" {
+				verifyUserAnswer(update, activeChallenges, lang, bot)
 			}
+			// else {
+			// 	queue = append(queue, update)
+			// 	bot.DeleteMessage(botapi.DeleteMessageConfig{
+			// 		ChatID:    update.Message.Chat.ID,
+			// 		MessageID: update.Message.MessageID,
+			// 	})
+			// }
 		case m := <-timeout:
 			if _, ok := activeChallenges[m.userID]; ok {
 				log.Printf("[%v] User failed to solve challenge", m.userID)
@@ -100,38 +100,48 @@ func startBot(
 }
 
 func sendChallengeToUser(
-	user botapi.User,
+	message message,
 	lang language.Language,
 	bot adapter.BotIface,
 	c challenge.SumChallenge) {
 
-	msg := botapi.NewMessage(int64(user.ID), lang.Welcome())
-	bot.Send(msg)
+	msg := botapi.NewMessage(message.chatID, lang.Welcome())
+	_, err := bot.Send(msg)
+	if err != nil {
+		log.Printf("[%v] error: %v", message.chatID, err)
+	}
 
-	msg = botapi.NewMessage(int64(user.ID), fmt.Sprintf(lang.Challenge(), c.A, c.Operation, c.B))
-	bot.Send(msg)
+	msg = botapi.NewMessage(message.chatID, fmt.Sprintf(lang.Challenge(), c.A, c.Operation, c.B))
+	_, err = bot.Send(msg)
+	if err != nil {
+		log.Printf("[%v] error: %v", message.chatID, err)
+	}
 }
 
 func verifyUserAnswer(
 	u botapi.Update,
-	c challenge.SumChallenge,
 	activeChallenges map[int]challenge.SumChallenge,
 	lang language.Language,
 	bot adapter.BotIface) {
 
-	var msg botapi.MessageConfig
-	if u.Message.Text == strconv.Itoa(c.Result) {
-		msg = botapi.NewMessage(u.Message.Chat.ID, lang.Correct())
-		delete(activeChallenges, u.Message.From.ID)
+	if c, ok := activeChallenges[u.Message.From.ID]; ok {
+		var msg botapi.MessageConfig
+		if u.Message.Text == strconv.Itoa(c.Result) {
+			msg = botapi.NewMessage(u.Message.Chat.ID, lang.Correct())
+			delete(activeChallenges, u.Message.From.ID)
 
-		log.Printf("[%v] User successfully solved the challange", u.Message.From.ID)
-	} else {
-		msg = botapi.NewMessage(u.Message.Chat.ID, lang.Wrong())
+			log.Printf("[%v] User successfully solved the challange", u.Message.From.ID)
+		} else {
+			msg = botapi.NewMessage(u.Message.Chat.ID, lang.Wrong())
 
-		log.Printf("[%v] Wrong answer for challenge", u.Message.From.ID)
+			log.Printf("[%v] Wrong answer for challenge", u.Message.From.ID)
+		}
+		msg.ReplyToMessageID = u.Message.MessageID
+		_, err := bot.Send(msg)
+		if err != nil {
+			log.Printf("[%v] error: %v", u.Message.From.ID, err)
+		}
 	}
-	msg.ReplyToMessageID = u.Message.MessageID
-	bot.Send(msg)
 }
 
 func kickUser(message message, bot adapter.BotIface) {

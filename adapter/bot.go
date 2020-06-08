@@ -15,8 +15,9 @@ type BotAdapter struct {
 	Self botapi.User
 }
 
-func NewBotAPI(token string) (BotIface, error) {
+func NewBotAPI(token string, debug bool) (BotIface, error) {
 	b, err := botapi.NewBotAPI(token)
+	b.Debug = debug
 	if err != nil {
 		return nil, err
 	}
