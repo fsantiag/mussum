@@ -3,7 +3,7 @@ package language
 type Pt struct{}
 
 func (p Pt) Welcome() string {
-	return "Bem vinda ao DevOps Recife! Enviei um desafio para você e espero que você me retorne em até 60 segundos ou terei que te convidar para sair do grupo! Nada pessoal, só não aceitamos spammers! :P"
+	return "Bem vinda ao DevOps Recife @%v! Estou enviando um desafio para você e espero que você me retorne em até 60 segundos ou terei que te convidar para sair do grupo! Nada pessoal, só não aceitamos spammers! :P"
 }
 func (p Pt) Wrong() string {
 	return "Resposta incorreta!"

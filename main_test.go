@@ -28,13 +28,14 @@ func TestSendChallengeToUser(t *testing.T) {
 
 	c := challenge.Generate()
 	l := language.Pt{}
+	userName := "someUser"
 
-	msg1 := botapi.NewMessage(20, l.Welcome())
+	msg1 := botapi.NewMessage(20, fmt.Sprintf(l.Welcome(), userName))
 	msg2 := botapi.NewMessage(20, fmt.Sprintf(l.Challenge(), c.A, c.Operation, c.B))
 
 	mockBotAPI.EXPECT().Send(msg1).Return(botapi.Message{}, nil).Times(1)
 	mockBotAPI.EXPECT().Send(msg2).Return(botapi.Message{}, nil).Times(1)
-	sendChallengeToUser(message{userID: 10, chatID: 20}, l, mockBotAPI, c)
+	sendChallengeToUser(userName, 20, l, mockBotAPI, c)
 }
 
 func TestUserPassesTheChallenge(t *testing.T) {

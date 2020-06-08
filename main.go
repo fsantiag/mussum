@@ -61,7 +61,7 @@ func startBot(
 
 					c := challenge.Generate()
 
-					sendChallengeToUser(message{userID: user.ID, chatID: update.Message.Chat.ID}, lang, bot, c)
+					sendChallengeToUser(user.UserName, update.Message.Chat.ID, lang, bot, c)
 
 					activeChallenges[user.ID] = c
 
@@ -100,21 +100,22 @@ func startBot(
 }
 
 func sendChallengeToUser(
-	message message,
+	userName string,
+	chatID int64,
 	lang language.Language,
 	bot adapter.BotIface,
 	c challenge.SumChallenge) {
 
-	msg := botapi.NewMessage(message.chatID, lang.Welcome())
+	msg := botapi.NewMessage(chatID, fmt.Sprintf(lang.Welcome(), userName))
 	_, err := bot.Send(msg)
 	if err != nil {
-		log.Printf("[%v] error: %v", message.chatID, err)
+		log.Printf("[%v] error: %v", chatID, err)
 	}
 
-	msg = botapi.NewMessage(message.chatID, fmt.Sprintf(lang.Challenge(), c.A, c.Operation, c.B))
+	msg = botapi.NewMessage(chatID, fmt.Sprintf(lang.Challenge(), c.A, c.Operation, c.B))
 	_, err = bot.Send(msg)
 	if err != nil {
-		log.Printf("[%v] error: %v", message.chatID, err)
+		log.Printf("[%v] error: %v", chatID, err)
 	}
 }
 
