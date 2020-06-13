@@ -8,8 +8,11 @@ This bot is inspired by a Brazilian comedian called [Mussum](https://en.wikipedi
 </p>
 
 
+## Usage
+Mussum generates a random sum challenge and gives the user 60 seconds to solve it. If the challenge is solved, user gets a confirmation and stays in the group. If user fails, Mussum will kick the user from the group. Therefore, Mussum also needs to have admin permission for your group in order to kick the users that fail the challenge.
+
 ## Build
-The following command should build Mussum as well as its docker image.
+The following command should build Mussum binary as well as its docker image.
 ```
 make build
 ```
@@ -27,6 +30,10 @@ Mussum speaks portuguese by default.
 make test
 ```
 
+## Running linter
+```
+make lint
+```
 ## Changing the language
 Mussum currently supports portuguese(pt) and english(en).
 ```
