@@ -15,7 +15,7 @@ type SumChallenge struct {
 
 const max = 100
 
-// GenerateChallenge will create a random sum challenge
+// Generate will create a random sum challenge
 func Generate() SumChallenge {
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)

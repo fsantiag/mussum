@@ -26,7 +26,7 @@ func main() {
 	log.Printf("Bot started and authorized on account [%v]", b.UserName())
 	m := make(map[int]challenge.SumChallenge)
 	l := language.GetDefault()
-	log.Printf("Active language: %v", l.Id())
+	log.Printf("Active language: %v", l.ID())
 	u := botapi.NewUpdate(0)
 	u.Timeout = 60
 	updates, err := b.GetUpdatesChan(u)

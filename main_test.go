@@ -27,7 +27,7 @@ func TestSendChallengeToUser(t *testing.T) {
 	}()
 
 	c := challenge.Generate()
-	l := language.Pt{}
+	l := language.GetDefault()
 	userName := "someUser"
 
 	msg1 := botapi.NewMessage(20, fmt.Sprintf(l.Welcome(), userName))
@@ -64,7 +64,7 @@ func TestUserPassesTheChallenge(t *testing.T) {
 	m := map[int]challenge.SumChallenge{
 		1: c,
 	}
-	l := language.Pt{}
+	l := language.GetDefault()
 
 	msg := botapi.NewMessage(u.Message.Chat.ID, l.Correct())
 	msg.ReplyToMessageID = u.Message.MessageID
@@ -102,7 +102,7 @@ func TestUserFailsTheChallenge(t *testing.T) {
 	m := map[int]challenge.SumChallenge{
 		1: c,
 	}
-	l := language.Pt{}
+	l := language.GetDefault()
 
 	msg := botapi.NewMessage(u.Message.Chat.ID, l.Wrong())
 	msg.ReplyToMessageID = u.Message.MessageID

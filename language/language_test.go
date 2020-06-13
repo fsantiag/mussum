@@ -10,12 +10,12 @@ import (
 func TestDefaultsToPortuguese(t *testing.T) {
 	lang := GetDefault()
 
-	assert.Equal(t, "pt", lang.Id())
+	assert.Equal(t, "pt", lang.ID())
 }
 func TestSelectLanguageFromEnvVar(t *testing.T) {
 	os.Setenv("LANGUAGE", "en")
 
 	lang := GetDefault()
 
-	assert.Equal(t, "en", lang.Id())
+	assert.Equal(t, "en", lang.ID())
 }

@@ -1,19 +1,19 @@
 package language
 
-type En struct{}
+type en struct{}
 
-func (e En) Welcome() string {
+func (e en) Welcome() string {
 	return "Welcome to the group!"
 }
-func (e En) Wrong() string {
+func (e en) Wrong() string {
 	return "The answer is wrong, try again."
 }
-func (e En) Correct() string {
+func (e en) Correct() string {
 	return "That is correct, thank you!"
 }
-func (e En) Challenge() string {
+func (e en) Challenge() string {
 	return "What is thre result of %v %v %v?"
 }
-func (e En) Id() string {
+func (e en) ID() string {
 	return "en"
 }
