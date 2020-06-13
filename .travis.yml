@@ -7,8 +7,11 @@ addons:
   ssh_known_hosts: fsantiago.info
 jobs:
   include:
-  - stage: Build & Test & Publish
-    script: make build && scripts/publish.sh
+  - stage: Build & Publish
+    name: Build
+    script: go get -u golang.org/x/lint/golint && make build
+  - script: scripts/publish.sh
+    name: Publish
   - stage: Deploy
     script: scp docker-compose.yml fsantiago@fsantiago.info:/home/fsantiago/mussum/ && ssh fsantiago@fsantiago.info "cd mussum && docker-compose pull && APIKEY=${TELEGRAM_TOKEN} docker-compose up --force-recreate -d"
 before_install:
