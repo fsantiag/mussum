@@ -1,4 +1,4 @@
-# Mussum
+# Mussum [![Build Status](https://travis-ci.org/fsantiag/mussum.svg?branch=master)](https://travis-ci.org/fsantiag/mussum)
 > A telegram bot to help you fight spam written in Go
 
 This bot is inspired by a Brazilian comedian called [Mussum](https://en.wikipedia.org/wiki/Mussum). He was very popular between the 70's and 90's and he had a particular way of speaking portuguese while acting and I tried to bring that style into the way the bot talks to the users. Hope you enjoy it.
