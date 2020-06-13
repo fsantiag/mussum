@@ -3,16 +3,16 @@ package language
 type Pt struct{}
 
 func (p Pt) Welcome() string {
-	return "Bem vinda ao DevOps Recife @%v! Estou enviando um desafio para você e espero que você me retorne em até 60 segundos ou terei que te convidar para sair do grupo! Nada pessoal, só não aceitamos spammers! :P"
+	return "Bem vindis ao DevOps Recife @%v! Sou o moderadorzis do grupis e estouzis aqui paris garantirzis que não teremis spammers. Te enviis um desafiis e esperis que você me retorne em até 60 segundis ou terei que te convidarzis paris sairzis do grupis!"
 }
 func (p Pt) Wrong() string {
-	return "Resposta incorreta!"
+	return "Cacildis! Resposta incorretis! Que tentar de novis?"
 }
 func (p Pt) Correct() string {
-	return "Resposta correta!"
+	return "Respostis corretis! Viva a liberdadis!"
 }
 func (p Pt) Challenge() string {
-	return "Qual o valor de %v %v %v?"
+	return "Qualzis o valorzis de %v %v %v?"
 }
 func (p Pt) Id() string {
 	return "pt"
